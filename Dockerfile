@@ -37,15 +37,15 @@ ADD ./postgresql.conf /etc/postgresql/9.3/main/
 # ADD sets permissions on this directory to root
 RUN chown -R postgres:postgres /etc/postgresql/9.3/main
 
-# Expose data, log, and configuration directories
-VOLUME ["/data", "/var/log/postgresql", "/etc/postgresql/9.3/main"]
-
 USER postgres
 
-RUN  /etc/init.d/postgresql start &&\
+RUN /etc/init.d/postgresql start &&\
   psql --command "ALTER USER postgres WITH PASSWORD 'password';" &&\
   /etc/init.d/postgresql stop
 
 CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
+
+# Expose Postgres log, configuration and storage directories
+VOLUME ["/var/log/postgresql", "/etc/postgresql/9.3/main", "/var/lib/postgresql/9.3/main", "/data"]
 
 EXPOSE 5432
