@@ -7,7 +7,7 @@ ENV USERNAME postgres
 ENV PASSWORD password
 
 # Ensure UTF-8 locale
-RUN echo "LANG=\"en_US.UTF-8\"" > /etc/default/locale
+ADD ./locale /etc/default/locale
 RUN locale-gen en_US.UTF-8
 RUN dpkg-reconfigure locales
 
@@ -17,7 +17,7 @@ RUN apt-get update
 RUN apt-get install -y wget
 
 # Add PostgreSQL Global Development Group apt source
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+ADD ./pgdg.list /etc/apt/sources.list.d/pgdg.list
 
 # Add PGDG repository key
 RUN wget -qO - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
