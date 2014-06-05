@@ -16,9 +16,6 @@ RUN apt-get update
 # Install build dependencies
 RUN apt-get install -y wget
 
-# Install Postgres dependencies
-RUN apt-get install -y libreadline-dev zlib1g-dev flex bison libxml2-dev libxslt1-dev libssl-dev libpq-dev
-
 # Add PostgreSQL Global Development Group apt source
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 
