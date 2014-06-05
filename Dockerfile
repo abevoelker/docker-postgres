@@ -32,8 +32,9 @@ RUN apt-get install -y \
   postgresql-plpython-9.3 \
   postgresql-9.3-plv8
 
-# Clean up APT and temporary files
-RUN apt-get apt-get clean &&\
+# Remove build dependencies and clean up APT and temporary files
+RUN apt-get remove --purge -y wget &&\
+  apt-get clean &&\
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ADD ./pg_hba.conf     /etc/postgresql/9.3/main/
