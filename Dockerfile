@@ -3,6 +3,8 @@ MAINTAINER Abe Voelker <abe@abevoelker.com>
 
 # Ignore APT warnings about not having a TTY
 ENV DEBIAN_FRONTEND noninteractive
+ENV USERNAME postgres
+ENV PASSWORD password
 
 # Ensure UTF-8 locale
 RUN echo "LANG=\"en_US.UTF-8\"" > /etc/default/locale
@@ -28,7 +30,7 @@ RUN apt-get update
 # Install Postgres 9.3, PL/Python, PL/V8
 RUN apt-get install -y postgresql-9.3 postgresql-contrib-9.3 postgresql-server-dev-9.3 postgresql-plpython-9.3 postgresql-9.3-plv8
 
-# Clean up APT when done
+# Clean up APT and temporary files when done
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ADD ./pg_hba.conf     /etc/postgresql/9.3/main/
@@ -40,7 +42,7 @@ RUN chown -R postgres:postgres /etc/postgresql/9.3/main
 USER postgres
 
 RUN /etc/init.d/postgresql start &&\
-  psql --command "ALTER USER postgres WITH PASSWORD 'password';" &&\
+  psql --command "ALTER USER postgres WITH PASSWORD '$PASSWORD';" &&\
   /etc/init.d/postgresql stop
 
 CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
