@@ -25,15 +25,21 @@ RUN wget -qO - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key ad
 RUN apt-get update
 
 # Install Postgres 9.3, PL/Python, PL/V8
-RUN apt-get install -y postgresql-9.3 postgresql-contrib-9.3 postgresql-server-dev-9.3 postgresql-plpython-9.3 postgresql-9.3-plv8
+RUN apt-get install -y \
+  postgresql-9.3 \
+  postgresql-contrib-9.3 \
+  postgresql-server-dev-9.3 \
+  postgresql-plpython-9.3 \
+  postgresql-9.3-plv8
 
-# Clean up APT and temporary files when done
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Clean up APT and temporary files
+RUN apt-get apt-get clean &&\
+  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ADD ./pg_hba.conf     /etc/postgresql/9.3/main/
 ADD ./postgresql.conf /etc/postgresql/9.3/main/
 
-# ADD sets permissions on this directory to root
+# ADD sets ownership on this directory to root
 RUN chown -R postgres:postgres /etc/postgresql/9.3/main
 
 USER postgres
@@ -45,6 +51,9 @@ RUN /etc/init.d/postgresql start &&\
 CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
 
 # Expose Postgres log, configuration and storage directories
-VOLUME ["/var/log/postgresql", "/etc/postgresql/9.3/main", "/var/lib/postgresql/9.3/main", "/data"]
+VOLUME ["/var/log/postgresql", \
+        "/etc/postgresql/9.3/main", \
+        "/var/lib/postgresql/9.3/main", \
+        "/data"]
 
 EXPOSE 5432
