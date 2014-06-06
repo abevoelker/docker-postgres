@@ -3,8 +3,10 @@ MAINTAINER Abe Voelker <abe@abevoelker.com>
 
 # Ignore APT warnings about not having a TTY
 ENV DEBIAN_FRONTEND noninteractive
+
 ENV USERNAME postgres
 ENV PASSWORD password
+ENV VERSION  9.3
 
 # Ensure UTF-8 locale
 ADD ./locale /etc/default/locale
@@ -22,24 +24,24 @@ RUN wget -qO - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key ad
 
 RUN apt-get update
 
-# Install Postgres 9.3, PL/Python, PL/V8
+# Install Postgres, PL/Python, PL/V8
 RUN apt-get install -y \
-  postgresql-9.3 \
-  postgresql-contrib-9.3 \
-  postgresql-server-dev-9.3 \
-  postgresql-plpython-9.3 \
-  postgresql-9.3-plv8
+  postgresql-$VERSION \
+  postgresql-contrib-$VERSION \
+  postgresql-server-dev-$VERSION \
+  postgresql-plpython-$VERSION \
+  postgresql-$VERSION-plv8
 
 # Remove build dependencies and clean up APT and temporary files
 RUN apt-get remove --purge -y wget &&\
   apt-get clean &&\
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ADD ./pg_hba.conf     /etc/postgresql/9.3/main/
-ADD ./postgresql.conf /etc/postgresql/9.3/main/
+ADD ./$VERSION/pg_hba.conf     /etc/postgresql/$VERSION/main/
+ADD ./$VERSION/postgresql.conf /etc/postgresql/$VERSION/main/
 
 # ADD sets ownership on this directory to root
-RUN chown -R postgres:postgres /etc/postgresql/9.3/main
+RUN chown -R postgres:postgres /etc/postgresql/$VERSION/main
 
 USER postgres
 
