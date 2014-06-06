@@ -9,15 +9,15 @@ ENV PASSWORD password
 ENV VERSION  9.3
 
 # Ensure UTF-8 locale
-ADD ./locale /etc/default/locale
-RUN locale-gen en_US.UTF-8 &&\
+RUN echo "LANG=\"en_US.UTF-8\"" > /etc/default/locale &&\
+  locale-gen en_US.UTF-8 &&\
   dpkg-reconfigure locales
 
 # Install build dependencies
 RUN apt-get install -y wget
 
 # Add PostgreSQL Global Development Group apt source
-ADD ./pgdg.list /etc/apt/sources.list.d/pgdg.list
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 
 # Add PGDG repository key
 RUN wget -qO - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
