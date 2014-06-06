@@ -8,8 +8,8 @@ ENV PASSWORD password
 
 # Ensure UTF-8 locale
 ADD ./locale /etc/default/locale
-RUN locale-gen en_US.UTF-8
-RUN dpkg-reconfigure locales
+RUN locale-gen en_US.UTF-8 &&\
+  dpkg-reconfigure locales
 
 RUN apt-get update
 
