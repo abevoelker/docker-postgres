@@ -11,8 +11,6 @@ ADD ./locale /etc/default/locale
 RUN locale-gen en_US.UTF-8 &&\
   dpkg-reconfigure locales
 
-RUN apt-get update
-
 # Install build dependencies
 RUN apt-get install -y wget
 
