@@ -1,9 +1,6 @@
 FROM       ubuntu:trusty
 MAINTAINER Abe Voelker <abe@abevoelker.com>
 
-# Ignore APT warnings about not having a TTY
-ENV DEBIAN_FRONTEND noninteractive
-
 ENV USERNAME postgres
 ENV PASSWORD password
 ENV VERSION  9.2
@@ -14,10 +11,10 @@ RUN locale-gen en_US.UTF-8 &&\
   dpkg-reconfigure locales
 
 # Update APT
-RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get update
 
 # Install build dependencies
-RUN apt-get install -y wget
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y wget
 
 # Add PostgreSQL Global Development Group apt source
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list
@@ -25,10 +22,10 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/
 # Add PGDG repository key
 RUN wget -qO - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 
-RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get update
 
 # Install Postgres, PL/Python, PL/V8
-RUN apt-get install -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   postgresql-$VERSION \
   postgresql-contrib-$VERSION \
   postgresql-server-dev-$VERSION \
@@ -36,7 +33,7 @@ RUN apt-get install -y \
   postgresql-$VERSION-plv8
 
 # Remove build dependencies and clean up APT and temporary files
-RUN apt-get remove --purge -y wget &&\
+RUN DEBIAN_FRONTEND=noninteractive apt-get remove --purge -y wget &&\
   apt-get clean &&\
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
