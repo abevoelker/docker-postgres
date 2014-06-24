@@ -9,8 +9,8 @@ ENV PASSWORD password
 ENV VERSION  9.1
 
 # Ensure UTF-8 locale
-RUN echo "LANG=\"en_US.UTF-8\"" > /etc/default/locale &&\
-  locale-gen en_US.UTF-8 &&\
+COPY locale /etc/default/locale
+RUN locale-gen en_US.UTF-8 &&\
   dpkg-reconfigure locales
 
 # Update APT
