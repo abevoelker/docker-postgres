@@ -54,10 +54,9 @@ RUN /etc/init.d/postgresql start &&\
 
 CMD ["/usr/lib/postgresql/9.2/bin/postgres", "-D", "/var/lib/postgresql/9.2/main", "-c", "config_file=/etc/postgresql/9.2/main/postgresql.conf"]
 
-# Expose Postgres log, configuration and storage directories
+# Expose Postgres log, configuration and storage directories for backing up
 VOLUME ["/var/log/postgresql", \
         "/etc/postgresql/9.2/main", \
-        "/var/lib/postgresql/9.2/main", \
-        "/data"]
+        "/var/lib/postgresql/9.2/main"]
 
 EXPOSE 5432
