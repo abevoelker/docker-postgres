@@ -37,10 +37,10 @@ RUN apt-get remove --purge -y wget &&\
   apt-get clean &&\
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ADD ./pg_hba.conf     /etc/postgresql/$VERSION/main/
-ADD ./postgresql.conf /etc/postgresql/$VERSION/main/
+COPY ./pg_hba.conf     /etc/postgresql/$VERSION/main/
+COPY ./postgresql.conf /etc/postgresql/$VERSION/main/
 
-# ADD sets ownership on this directory to root
+# COPY sets ownership on this directory to root
 RUN chown -R postgres:postgres /etc/postgresql/$VERSION/main
 
 USER postgres
