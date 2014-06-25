@@ -30,18 +30,44 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   postgresql-contrib-$VERSION \
   postgresql-server-dev-$VERSION \
   postgresql-plpython-$VERSION \
-  postgresql-$VERSION-plv8
+  postgresql-$VERSION-plv8 \
+# Install WAL-E dependencies and supervisord
+  python-dev \
+  python-pip \
+  daemontools \
+  libevent-dev \
+  lzop \
+  pv \
+  supervisor &&\
+  pip install virtualenv
+
+# Install WAL-E into a virtualenv
+RUN virtualenv /var/lib/postgresql/wal-e &&\
+  . /var/lib/postgresql/wal-e/bin/activate &&\
+  pip install wal-e &&\
+  ln -s /var/lib/postgresql/wal-e/bin/wal-e /usr/local/bin/wal-e
+
+# Create directory for storing secret WAL-E environment variables
+RUN umask u=rwx,g=rx,o= &&\
+  mkdir -p /etc/wal-e.d/env &&\
+  chown -R root:postgres /etc/wal-e.d/env
 
 # Remove build dependencies and clean up APT and temporary files
 RUN DEBIAN_FRONTEND=noninteractive apt-get remove --purge -y wget &&\
   apt-get clean &&\
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Copy basic Postgres configs with values suitable for development
+# (note: these should be overridden in production!)
 COPY ./pg_hba.conf     /etc/postgresql/$VERSION/main/
 COPY ./postgresql.conf /etc/postgresql/$VERSION/main/
 
 # COPY sets ownership on this directory to root
 RUN chown -R postgres:postgres /etc/postgresql/$VERSION/main
+
+# Copy supervisord configs
+COPY supervisord/cron.conf     /etc/supervisor/conf.d/
+COPY supervisord/postgres.conf /etc/supervisor/conf.d/
 
 USER postgres
 
@@ -49,10 +75,15 @@ RUN /etc/init.d/postgresql start &&\
   psql --command "ALTER USER postgres WITH PASSWORD '$PASSWORD';" &&\
   /etc/init.d/postgresql stop
 
-CMD ["/usr/lib/postgresql/9.1/bin/postgres", "-D", "/var/lib/postgresql/9.1/main", "-c", "config_file=/etc/postgresql/9.1/main/postgresql.conf"]
+USER root
+
+# The image only runs Postgres by default. If you want to run periodic full
+# backups with cron + WAL-E you should start supervisord instead (see README)
+CMD ["su", "postgres", "-c", "/usr/lib/postgresql/9.1/bin/postgres -D /var/lib/postgresql/9.1/main -c config_file=/etc/postgresql/9.1/main/postgresql.conf"]
 
 # Expose Postgres log, configuration and storage directories for backing up
 VOLUME ["/var/log/postgresql", \
+        "/var/log/supervisor", \
         "/etc/postgresql/9.1/main", \
         "/var/lib/postgresql/9.1/main"]
 
