@@ -32,6 +32,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   postgresql-plpython-$VERSION \
   postgresql-$VERSION-plv8 \
 # Install WAL-E dependencies and supervisord
+  libxml2-dev \
+  libxslt1-dev \
   python-dev \
   python-pip \
   daemontools \
