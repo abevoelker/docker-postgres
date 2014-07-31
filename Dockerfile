@@ -5,6 +5,10 @@ ENV USERNAME postgres
 ENV PASSWORD password
 ENV VERSION  9.2
 
+# Temporary hack around a Docker Hub `docker build` issue. See:
+# https://github.com/docker/docker/issues/6345#issuecomment-49245365
+RUN ln -s -f /bin/true /usr/bin/chfn
+
 # Disable SSH and existing cron jobs
 RUN rm -rf /etc/service/sshd \
   /etc/my_init.d/00_regen_ssh_host_keys.sh \
