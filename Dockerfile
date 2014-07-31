@@ -75,6 +75,7 @@ RUN chmod -R 755 /data/scripts
 
 # Copy supervisord configs
 COPY supervisord/cron.conf     /etc/supervisor/conf.d/
+COPY supervisord/syslog.conf   /etc/supervisor/conf.d/
 COPY supervisord/postgres.conf /etc/supervisor/conf.d/
 
 USER postgres
