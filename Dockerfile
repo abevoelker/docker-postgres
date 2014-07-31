@@ -52,7 +52,7 @@ RUN virtualenv /var/lib/postgresql/wal-e &&\
 # Create directory for storing secret WAL-E environment variables
 RUN umask u=rwx,g=rx,o= &&\
   mkdir -p /etc/wal-e.d/env &&\
-  chown -R root:postgres /etc/wal-e.d/env
+  chown -R root:postgres /etc/wal-e.d
 
 # Remove build dependencies and clean up APT and temporary files
 RUN DEBIAN_FRONTEND=noninteractive apt-get remove --purge -y wget &&\
@@ -66,6 +66,12 @@ COPY ./postgresql.conf /etc/postgresql/$VERSION/main/
 
 # COPY sets ownership on this directory to root
 RUN chown -R postgres:postgres /etc/postgresql/$VERSION/main
+
+# Use wrapper scripts to start cron and Postgres
+RUN mkdir -p -m 755 /data/scripts
+COPY scripts/start_postgres.sh /data/scripts/
+COPY scripts/start_cron.sh     /data/scripts/
+RUN chmod -R 755 /data/scripts
 
 # Copy supervisord configs
 COPY supervisord/cron.conf     /etc/supervisor/conf.d/
@@ -81,9 +87,9 @@ USER root
 
 # The image only runs Postgres by default. If you want to run periodic full
 # backups with cron + WAL-E you should start supervisord instead (see README)
-CMD ["su", "postgres", "-c", "/usr/lib/postgresql/9.1/bin/postgres -D /var/lib/postgresql/9.1/main -c config_file=/etc/postgresql/9.1/main/postgresql.conf"]
+CMD ["/data/scripts/start_postgres.sh"]
 
-# Expose Postgres log, configuration and storage directories for backing up
+# Keep Postgres log, config and storage outside of union filesystem
 VOLUME ["/var/log/postgresql", \
         "/var/log/supervisor", \
         "/etc/postgresql/9.1/main", \
