@@ -21,7 +21,7 @@ This image comes with [WAL-E][wal-e] for performing continuous archiving of Post
 
   ```
   0 2 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.1/main
-  0 3 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e delete --confirm retain 7 /var/lib/postgresql/9.1/main
+  0 3 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
   ```
 
 4. Run the container with supervisord instead of the default command (which just starts Postgres).  This is necessary to start both cron and Postgres.
@@ -35,7 +35,7 @@ AWS_SECRET_ACCESS_KEY
 WALE_S3_PREFIX
 $ cat /tmp/wal-e/cron/wal-e
 0 2 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.1/main
-0 3 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e delete --confirm retain 7 /var/lib/postgresql/9.1/main
+0 3 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
 $ docker run -v /tmp/wal-e/env:/etc/wal-e.d/env -v /tmp/wal-e/cron:/etc/cron.d abevoelker/postgres /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -n
 ```
 
