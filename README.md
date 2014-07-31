@@ -29,14 +29,16 @@ This image comes with [WAL-E][wal-e] for performing continuous archiving of Post
 An example `docker run` that covers some of this follows:
 
 ```
-$ ls -1 /tmp/wal-e/env
+$ ls -1 /tmp/env
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 WALE_S3_PREFIX
-$ cat /tmp/wal-e/cron/wal-e
+$ ls -1 /tmp/cron
+wal-e
+$ cat /tmp/cron/wal-e
 0 2 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.3/main
 0 3 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
-$ docker run -v /tmp/wal-e/env:/etc/wal-e.d/env -v /tmp/wal-e/cron:/etc/cron.d abevoelker/postgres /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -n
+$ docker run -v /tmp/env:/etc/wal-e.d/env -v /tmp/cron:/etc/cron.d abevoelker/postgres /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -n
 ```
 
 ## License
