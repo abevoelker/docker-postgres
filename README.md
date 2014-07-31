@@ -11,7 +11,7 @@ This image comes with [WAL-E][wal-e] for performing continuous archiving of Post
 2. Edit your `postgresql.conf` archive settings to use WAL-E. Changes should look something like this:
 
   ```
-  wal_level = archive
+  wal_level = archive # hot_standby is also acceptable (will log more)
   archive_mode = on
   archive_command = 'envdir /etc/wal-e.d/env wal-e wal-push %p'
   archive_timeout = 60
@@ -25,9 +25,9 @@ This image comes with [WAL-E][wal-e] for performing continuous archiving of Post
   0 3 * * * postgres envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
   ```
 
-4. Run the container with supervisord instead of the default command (which just starts Postgres).  This is necessary to start both cron and Postgres.
+4. Run the container with `/sbin/my_init` instead of the default command.  This is necessary to start cron, syslog, and Postgres.  In this mode, [runit][runit] manages the cron and Postgres processes and will restart them automatically if they crash.
 
-An example `docker run` that covers some of this follows:
+Example `docker run` that covers basic WAL-E usage:
 
 ```
 $ ls -1 /tmp/env
@@ -40,7 +40,13 @@ $ cat /tmp/cron/wal-e
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 0 2 * * * postgres envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.2/main
 0 3 * * * postgres envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
-$ docker run -v /tmp/env:/etc/wal-e.d/env -v /tmp/cron:/etc/cron.d abevoelker/postgres /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -n
+$ docker run -v /tmp/env:/etc/wal-e.d/env -v /tmp/cron:/etc/cron.d abevoelker/postgres /sbin/my_init
+*** Running /etc/rc.local...
+*** Booting runit daemon...
+*** Runit started as PID 13
+2014-07-31 06:11:07 UTC LOG:  database system was shut down at 2014-07-31 05:52:53 UTC
+2014-07-31 06:11:07 UTC LOG:  database system is ready to accept connections
+2014-07-31 06:11:07 UTC LOG:  autovacuum launcher started
 ```
 
 ## License
@@ -49,3 +55,4 @@ MIT license.
 
 [wal-e]:  https://github.com/wal-e/wal-e
 [envdir]: https://pypi.python.org/pypi/envdir
+[runit]:  http://smarden.org/runit/

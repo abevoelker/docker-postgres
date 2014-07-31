@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /data/scripts/start_cron.sh

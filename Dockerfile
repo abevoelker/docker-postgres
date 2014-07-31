@@ -1,9 +1,19 @@
-FROM       ubuntu:trusty
+FROM       phusion/baseimage:0.9.12
 MAINTAINER Abe Voelker <abe@abevoelker.com>
 
 ENV USERNAME postgres
 ENV PASSWORD password
 ENV VERSION  9.2
+
+# Disable SSH and existing cron jobs
+RUN rm -rf /etc/service/sshd \
+  /etc/my_init.d/00_regen_ssh_host_keys.sh \
+  /etc/cron.daily/dpkg \
+  /etc/cron.daily/apt \
+  /etc/cron.daily/passwd \
+  /etc/cron.daily/logrotate \
+  /etc/cron.daily/upstart \
+  /etc/cron.weekly/fstrim
 
 # Ensure UTF-8 locale
 COPY locale /etc/default/locale
@@ -31,7 +41,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   postgresql-server-dev-$VERSION \
   postgresql-plpython-$VERSION \
   postgresql-$VERSION-plv8 \
-# Install WAL-E dependencies and supervisord
+# Install WAL-E dependencies
   libxml2-dev \
   libxslt1-dev \
   python-dev \
@@ -39,8 +49,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   daemontools \
   libevent-dev \
   lzop \
-  pv \
-  supervisor &&\
+  pv &&\
   pip install virtualenv
 
 # Install WAL-E into a virtualenv
@@ -73,9 +82,11 @@ COPY scripts/start_postgres.sh /data/scripts/
 COPY scripts/start_cron.sh     /data/scripts/
 RUN chmod -R 755 /data/scripts
 
-# Copy supervisord configs
-COPY supervisord/cron.conf     /etc/supervisor/conf.d/
-COPY supervisord/postgres.conf /etc/supervisor/conf.d/
+# Copy runit configs
+RUN mkdir -m 755 -p /etc/service/postgres
+COPY runit/cron     /etc/service/cron/run
+COPY runit/postgres /etc/service/postgres/run
+RUN chmod 755 /etc/service/cron/run /etc/service/postgres/run
 
 USER postgres
 
