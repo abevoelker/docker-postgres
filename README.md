@@ -20,8 +20,9 @@ This image comes with [WAL-E][wal-e] for performing continuous archiving of Post
 3. Mount a volume to `/etc/cron.d` with a crontab for running your periodic WAL-E tasks (e.g. full backups, deleting old backups).  Here's an example that does a full backup daily at 2AM and deletes old backups (retaining 7 previous backups) at 3AM:
 
   ```
-  0 2 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.1/main
-  0 3 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
+  PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  0 2 * * * postgres envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.1/main
+  0 3 * * * postgres envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
   ```
 
 4. Run the container with supervisord instead of the default command (which just starts Postgres).  This is necessary to start both cron and Postgres.
@@ -36,8 +37,9 @@ WALE_S3_PREFIX
 $ ls -1 /tmp/cron
 wal-e
 $ cat /tmp/cron/wal-e
-0 2 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.1/main
-0 3 * * * postgres /usr/bin/envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+0 2 * * * postgres envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.1/main
+0 3 * * * postgres envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
 $ docker run -v /tmp/env:/etc/wal-e.d/env -v /tmp/cron:/etc/cron.d abevoelker/postgres /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -n
 ```
 
