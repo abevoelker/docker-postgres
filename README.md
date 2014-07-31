@@ -2,6 +2,15 @@
 
 Docker image for Postgres 9.2 + WAL-E + PL/Python and PL/V8 languages
 
+## Basic usage
+
+```
+$ docker run -p 5432:5432 abevoelker/postgres
+2014-07-31 06:11:07 UTC LOG:  database system was shut down at 2014-07-31 05:52:53 UTC
+2014-07-31 06:11:07 UTC LOG:  database system is ready to accept connections
+2014-07-31 06:11:07 UTC LOG:  autovacuum launcher started
+```
+
 ## WAL-E usage
 
 This image comes with [WAL-E][wal-e] for performing continuous archiving of PostgreSQL WAL files and base backups.  To use WAL-E, you need to do a few things:
