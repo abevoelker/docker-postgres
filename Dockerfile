@@ -81,9 +81,7 @@ COPY ./postgresql.conf /etc/postgresql/$VERSION/main/
 RUN chown -R postgres:postgres /etc/postgresql/$VERSION/main
 
 # Use wrapper scripts to start cron and Postgres
-RUN mkdir -p -m 755 /data/scripts
-COPY scripts/start_postgres.sh /data/scripts/
-COPY scripts/start_cron.sh     /data/scripts/
+COPY scripts /data/scripts
 RUN chmod -R 755 /data/scripts
 
 # Copy runit configs
