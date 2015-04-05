@@ -53,7 +53,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   daemontools \
   libevent-dev \
   lzop \
-  pv &&\
+  pv \
+  libffi-dev \
+  libssl-dev &&\
   pip install virtualenv
 
 # Install WAL-E into a virtualenv
