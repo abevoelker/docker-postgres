@@ -3,7 +3,7 @@ MAINTAINER Abe Voelker <abe@abevoelker.com>
 
 ENV USERNAME postgres
 ENV PASSWORD password
-ENV VERSION  9.3
+ENV VERSION  9.4
 
 # Temporary hack around a Docker Hub `docker build` issue. See:
 # https://github.com/docker/docker/issues/6345#issuecomment-49245365
@@ -53,7 +53,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   daemontools \
   libevent-dev \
   lzop \
-  pv &&\
+  pv \
+  libffi-dev \
+  libssl-dev &&\
   pip install virtualenv
 
 # Install WAL-E into a virtualenv
@@ -105,7 +107,7 @@ CMD ["/data/scripts/start_postgres.sh"]
 # Keep Postgres log, config and storage outside of union filesystem
 VOLUME ["/var/log/postgresql", \
         "/var/log/supervisor", \
-        "/etc/postgresql/9.3/main", \
-        "/var/lib/postgresql/9.3/main"]
+        "/etc/postgresql/9.4/main", \
+        "/var/lib/postgresql/9.4/main"]
 
 EXPOSE 5432
