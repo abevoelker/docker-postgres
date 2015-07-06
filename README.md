@@ -1,6 +1,6 @@
 # Postgres Dockerfile
 
-Docker image for Postgres 9.3 + WAL-E + PL/Python and PL/V8 languages
+Docker image for Postgres 9.4 + WAL-E + PL/Python and PL/V8 languages
 
 ## Basic usage
 
@@ -30,7 +30,7 @@ This image comes with [WAL-E][wal-e] for performing continuous archiving of Post
 
   ```
   PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-  0 2 * * * postgres envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.3/main
+  0 2 * * * postgres envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.4/main
   0 3 * * * postgres envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
   ```
 
@@ -47,7 +47,7 @@ $ ls -1 /tmp/cron
 wal-e
 $ cat /tmp/cron/wal-e
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-0 2 * * * postgres envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.3/main
+0 2 * * * postgres envdir /etc/wal-e.d/env wal-e backup-push /var/lib/postgresql/9.4/main
 0 3 * * * postgres envdir /etc/wal-e.d/env wal-e delete --confirm retain 7
 $ docker run -v /tmp/env:/etc/wal-e.d/env -v /tmp/cron:/etc/cron.d abevoelker/postgres /sbin/my_init
 *** Running /etc/rc.local...
